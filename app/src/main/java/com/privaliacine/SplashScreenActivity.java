@@ -5,23 +5,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.bumptech.glide.Glide;
 import com.privaliacine.models.Movies;
 import com.privaliacine.models.Results;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-
 public class SplashScreenActivity extends AppCompatActivity {
     private static final String TAG = "RESULT: ";
     private static final String URL_STATIC_IMG = "https://image.tmdb.org/t/p/w500";
+    private ArrayList<String> arrayListImage = new ArrayList<>();
+    private ArrayList<String> arrayListTitle = new ArrayList<>();
+    private ArrayList<String> arrayListReleaseDate = new ArrayList<>();
+    private ArrayList<String> arrayListOverView = new ArrayList<>();
     Intent intent;
 
     @Override
@@ -29,12 +31,14 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen_activity);
 
-        Retrofit();
-
+        //ya preparamos el intent para el cambio de clase que va ocurrir en definitivo dentro del metodo Retrofit
         intent = new Intent(this, MoviesListControllerActivity.class);
+
+        //llama metodo para consumir el servidor usando la libreria retrofit
+        ConnectServerRetrofit();
     }
 
-    public void Retrofit() {
+    public void ConnectServerRetrofit() {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ServiceMoviesList.BASE_URL)
@@ -54,22 +58,24 @@ public class SplashScreenActivity extends AppCompatActivity {
                     Log.i("TAG", "Connected" + response.code());
                     Movies movies = response.body();
 
-                    ArrayList<HashMap<String,String>> stringArraylist = new  ArrayList<>();
-                    HashMap<String, String> hashMap;
                     for (Results results : movies.getResults()) {
-                        //crea HashMap para compor los parametros de ListView
-                        hashMap = new HashMap<>();
-                        //parametros del HashMap
-                        hashMap.put("image",URL_STATIC_IMG + results.getBackdrop_path());
-                        hashMap.put("title", results.getTitle());
-                        hashMap.put("releaseDate", ConvertDate(results.getRelease_date()));
-                        hashMap.put("overView", results.getOverview());
-                        //añadir el hashmap al list
-                        stringArraylist.add(hashMap);
+                        arrayListImage.add(URL_STATIC_IMG + results.getBackdrop_path());
+                        arrayListTitle.add(results.getTitle());
+                        arrayListReleaseDate.add(ConvertDate(results.getRelease_date()));
+                        arrayListOverView.add(results.getOverview());
                     }
+                    //converte el listArray para Array (definimos la variable y el tamaño del Array)
+                    String[] imageURL = new String[arrayListImage.size()];
+                    String[] title = new String[arrayListTitle.size()];
+                    String[] releaseDate = new String[arrayListReleaseDate.size()];
+                    String[] overView= new String[arrayListOverView.size()];
 
-                    //pasa el parametro del stringArray por intent y inicializa otra activity
-                    intent.putExtra("stringArrayList", stringArraylist);
+                    //pasa el parametro Array por intent y inicializa otra activity (MoviesListControllerActivity
+                    intent.putExtra("stringArrayImage", arrayListImage.toArray(imageURL));
+                    intent.putExtra("stringArrayTitle", arrayListTitle.toArray(title));
+                    intent.putExtra("stringArrayReleaseDate", arrayListReleaseDate.toArray(releaseDate));
+                    intent.putExtra("stringArrayOverView", arrayListOverView.toArray(overView));
+
                     startActivity(intent);
                     finish();
                 }
@@ -88,11 +94,4 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         return String.valueOf(calendar.get(Calendar.YEAR));
     }
-    /*
-    public String Glide(String url) {
-        Glide.with(this)
-            .load(url)
-            .into(imageView);
-
-    }*/
 }

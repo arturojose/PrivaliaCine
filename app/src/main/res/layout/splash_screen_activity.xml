@@ -5,5 +5,4 @@
     android:orientation="horizontal"
     android:background="@drawable/presentation"
     android:id="@+id/splashScreen">
-
 </LinearLayout>
