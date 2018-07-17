@@ -39,6 +39,12 @@ public class SimpleAdapterData extends ArrayAdapter {
         TextView textViewTitle = (TextView) convertView.findViewById(R.id.textViewTitleDataMovies);
         textViewTitle.setText(title[position]);
 
+        TextView textViewReleaseDate = (TextView) convertView.findViewById(R.id.textViewReleaseDateMovies);
+        textViewReleaseDate.setText(releaseDate[position]);
+
+        TextView textViewOverView = (TextView) convertView.findViewById(R.id.textViewOverViewMovies);
+        textViewOverView.setText(overView[position]);
+
         ImageView imageView = (ImageView) convertView.findViewById(R.id.imageViewDataMovies);
         //descarga imagenes usando la libreria Glide
         Glide.with(context).load(imageUrl[position]).into((ImageView) imageView);

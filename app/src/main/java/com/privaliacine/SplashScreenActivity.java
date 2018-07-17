@@ -1,5 +1,6 @@
 package com.privaliacine;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,15 +25,12 @@ public class SplashScreenActivity extends AppCompatActivity {
     private ArrayList<String> arrayListTitle = new ArrayList<>();
     private ArrayList<String> arrayListReleaseDate = new ArrayList<>();
     private ArrayList<String> arrayListOverView = new ArrayList<>();
-    Intent intent;
+    private Context context = SplashScreenActivity.this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen_activity);
-
-        //ya preparamos el intent para el cambio de clase que va ocurrir en definitivo dentro del metodo Retrofit
-        intent = new Intent(this, MoviesListControllerActivity.class);
 
         //llama metodo para consumir el servidor usando la libreria retrofit
         ConnectServerRetrofit();
@@ -69,6 +67,9 @@ public class SplashScreenActivity extends AppCompatActivity {
                     String[] title = new String[arrayListTitle.size()];
                     String[] releaseDate = new String[arrayListReleaseDate.size()];
                     String[] overView= new String[arrayListOverView.size()];
+
+                    //preparamos el intent para el cambio de clase
+                    Intent intent = new Intent(context, MoviesListControllerActivity.class);
 
                     //pasa el parametro Array por intent y inicializa otra activity (MoviesListControllerActivity
                     intent.putExtra("stringArrayImage", arrayListImage.toArray(imageURL));
