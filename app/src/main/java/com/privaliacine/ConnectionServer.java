@@ -1,13 +1,13 @@
 package com.privaliacine;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.privaliacine.models.Movies;
 import com.privaliacine.models.Results;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,7 +18,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SplashScreenActivity extends AppCompatActivity {
+public class ConnectionServer extends Activity{
+    Context context;
+    int numberPage;
     private static final String TAG = "RESULT: ";
     private static final String URL_STATIC_IMG = "https://image.tmdb.org/t/p/w500";
     private ArrayList<String> arrayListImage = new ArrayList<>();
@@ -26,21 +28,17 @@ public class SplashScreenActivity extends AppCompatActivity {
     private ArrayList<String> arrayListReleaseDate = new ArrayList<>();
     private ArrayList<String> arrayListOverView = new ArrayList<>();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.splash_screen_activity);
-
-        //llama la clase que hace la connecion
-        ConnectionServer connectionServer = new ConnectionServer(this, 1);
+    public ConnectionServer(Context context, int numberPage){
+        this.context = context;
+        this.numberPage = numberPage;
+        ConnectServerRetrofit(this.context, this.numberPage);
     }
 
-    public void ConnectServerRetrofit(int listNumber) {
-        final Context context = getApplicationContext();
+    public void ConnectServerRetrofit(final Context context, int listNumber) {
         Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(ServiceMoviesList.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
+                .baseUrl(ServiceMoviesList.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
         ServiceMoviesList serviceMoviesList = retrofit.create(ServiceMoviesList.class);
         Call<Movies> call = serviceMoviesList.listResults(listNumber, ServiceMoviesList.API_KEY, ServiceMoviesList.CONTENT_TYPE, ServiceMoviesList.LANGUAGE);
@@ -64,6 +62,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                         arrayListOverView.add(results.getOverview());
                     }
                     //converte el listArray para Array (definimos la variable y el tamaño del Array)
+
                     String[] imageURL = new String[arrayListImage.size()];
                     String[] title = new String[arrayListTitle.size()];
                     String[] releaseDate = new String[arrayListReleaseDate.size()];
@@ -71,7 +70,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                     //preparamos el intent para el cambio de clase
                     Intent intent = new Intent(context, MoviesListControllerActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     //pasa el parametro Array por intent y inicializa otra activity (MoviesListControllerActivity
                     intent.putExtra("intTotalPages", totalPages);
                     intent.putExtra("stringArrayImage", arrayListImage.toArray(imageURL));
@@ -79,7 +78,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                     intent.putExtra("stringArrayReleaseDate", arrayListReleaseDate.toArray(releaseDate));
                     intent.putExtra("stringArrayOverView", arrayListOverView.toArray(overView));
 
-                    startActivity(intent);
+                    context.startActivity(intent);
+                    //getApplicationContext().finish();
                 }
             }
 
@@ -96,4 +96,5 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         return String.valueOf(calendar.get(Calendar.YEAR));
     }
+
 }

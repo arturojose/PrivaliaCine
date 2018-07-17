@@ -23,8 +23,6 @@
         <activity android:name=".MoviesListControllerActivity">
         </activity>
 
-
-
     </application>
 
 </manifest>
